@@ -2,7 +2,6 @@ package chatwoot_service
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -15,7 +14,6 @@ import (
 	instance_model "github.com/EvolutionAPI/evolution-go/pkg/instance/model"
 	instance_repository "github.com/EvolutionAPI/evolution-go/pkg/instance/repository"
 	logger_wrapper "github.com/EvolutionAPI/evolution-go/pkg/logger"
-	"go.mau.fi/whatsmeow/types"
 	"go.mau.fi/whatsmeow/proto/waE2E"
 	"go.mau.fi/whatsmeow/types/events"
 )

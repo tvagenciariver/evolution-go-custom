@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	chatwoot_model "github.com/EvolutionAPI/evolution-go/pkg/chatwoot/model"
