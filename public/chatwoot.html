@@ -662,6 +662,14 @@
                                 <input type="password" id="cwToken" placeholder="Seu token pessoal de acesso" required>
                             </div>
                         </div>
+
+                        <div class="form-group">
+                            <label for="cwInboxId">Inbox ID (Opcional)</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-inbox"></i>
+                                <input type="text" id="cwInboxId" placeholder="ID de uma caixa de entrada existente">
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -874,11 +882,13 @@
                     document.getElementById('cwSignMsg').checked = config.signMsg;
                     document.getElementById('cwReopenChat').checked = config.reopenChat;
                     document.getElementById('cwImportHistory').checked = config.importHistory;
+                    document.getElementById('cwInboxId').value = config.inboxId || '';
 
                     document.getElementById('btnDelete').style.display = 'block';
                     log(`Instância "${instanceId}" já possui integração cadastrada! ID da Inbox: ${config.inboxId || 'N/A'}.`, 'success');
                 } else {
                     document.getElementById('btnDelete').style.display = 'none';
+                    document.getElementById('cwInboxId').value = '';
                     log(`Instância "${instanceId}" está livre para nova configuração.`, 'info');
                 }
 
@@ -903,6 +913,7 @@
             const signMsg = document.getElementById('cwSignMsg').checked;
             const reopenChat = document.getElementById('cwReopenChat').checked;
             const importHistory = document.getElementById('cwImportHistory').checked;
+            const inboxId = parseInt(document.getElementById('cwInboxId').value.trim()) || 0;
 
             if (!instanceId) {
                 log('Erro: Selecione uma instância antes de salvar!', 'error');
@@ -929,7 +940,8 @@
                 signMsg: signMsg,
                 reopenChat: reopenChat,
                 autoCreate: autoCreate,
-                importHistory: importHistory
+                importHistory: importHistory,
+                inboxId: inboxId
             };
 
             try {
