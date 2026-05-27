@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatwoot Integration Settings | Evolution API Custom</title>
+    <!-- Modern Premium Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-gradient-start: #0a0a16;
+            --bg-gradient-end: #05050e;
+            --card-bg: rgba(15, 15, 28, 0.75);
+            --card-border: rgba(255, 255, 255, 0.06);
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --primary-accent: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.35);
+            --secondary-accent: #06b6d4;
+            --secondary-glow: rgba(6, 182, 212, 0.35);
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --input-bg: rgba(255, 255, 255, 0.03);
+            --input-border: rgba(255, 255, 255, 0.08);
+            --input-focus-border: #6366f1;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            background: radial-gradient(circle at 50% 50%, #111128, #05050c);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 1rem;
+            overflow-x: hidden;
+        }
+
+        /* Subtle glowing background orbs */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: -1;
+            pointer-events: none;
+            opacity: 0.4;
+        }
+
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: var(--primary-accent);
+            top: 10%;
+            left: 15%;
+        }
+
+        .orb-2 {
+            width: 350px;
+            height: 350px;
+            background: var(--secondary-accent);
+            bottom: 10%;
+            right: 15%;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            z-index: 1;
+        }
+
+        /* Dashboard Glassmorphism Card */
+        .dashboard-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5),
+                        inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent));
+        }
+
+        /* Header Styling */
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #fff, #a5b4fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        h1 i {
+            background: linear-gradient(135deg, var(--primary-accent), var(--secondary-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        /* Forms Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .dashboard-card {
+                padding: 1.5rem;
+            }
+        }
+
+        .section-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 0.5rem;
+        }
+
+        .section-title i {
+            color: var(--secondary-accent);
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 1rem;
+            pointer-events: none;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        select {
+            width: 100%;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 12px;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            color: #fff;
+            font-size: 0.95rem;
+            outline: none;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        select:focus {
+            border-color: var(--input-focus-border);
+            box-shadow: 0 0 12px var(--primary-glow);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        /* Dropdown custom arrow */
+        .select-wrapper::after {
+            content: '\f107';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            pointer-events: none;
+        }
+
+        /* Swtich Toggles */
+        .toggle-group {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .toggle-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 0.85rem 1rem;
+        }
+
+        .toggle-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .toggle-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #fff;
+        }
+
+        .toggle-desc {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: .4s;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary-accent);
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px var(--primary-accent);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+
+        /* Action Buttons */
+        .actions-bar {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2.5rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.9rem 1.5rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-accent), var(--secondary-accent));
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 0 20px var(--primary-glow);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            flex: 0.5;
+        }
+
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Status Terminal Output */
+        .terminal-panel {
+            background: rgba(5, 5, 12, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 1.25rem;
+            margin-top: 2rem;
+            font-family: 'Courier New', Courier, monospace;
+            max-height: 200px;
+            overflow-y: auto;
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4);
+        }
+
+        .terminal-panel header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 0.5rem;
+        }
+
+        .terminal-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--secondary-accent);
+            font-weight: bold;
+        }
+
+        .terminal-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .dot-red { background: #ff5f56; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #27c93f; }
+
+        .terminal-output {
+            font-size: 0.85rem;
+            color: #10b981;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .log-entry {
+            margin-bottom: 4px;
+        }
+
+        .log-error {
+            color: var(--danger-color);
+        }
+
+        .log-info {
+            color: #fff;
+        }
+
+        /* Success Overlay with webhook instructions */
+        .success-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(7, 7, 15, 0.95);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem;
+            z-index: 10;
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(0.95);
+        }
+
+        .success-overlay.active {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1);
+        }
+
+        .success-icon {
+            font-size: 4rem;
+            color: var(--success-color);
+            margin-bottom: 1.5rem;
+            animation: pulse-success 2s infinite;
+        }
+
+        .webhook-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 1.5rem;
+            width: 100%;
+            max-width: 600px;
+            margin: 2rem 0;
+            text-align: left;
+        }
+
+        .webhook-url-display {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            font-size: 0.85rem;
+            color: var(--secondary-accent);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.5rem;
+        }
+
+        .webhook-url-display button {
+            background: var(--primary-accent);
+            border: none;
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .webhook-url-display button:hover {
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        .instructions-list {
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            padding-left: 1.2rem;
+            line-height: 1.6;
+        }
+
+        .instructions-list li {
+            margin-bottom: 8px;
+        }
+
+        .instructions-list strong {
+            color: white;
+        }
+
+        @keyframes pulse-success {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        /* Spinner for loading */
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Background Orbs -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <div class="container">
+        <div class="dashboard-card">
+            
+            <!-- Success Overlay Panel -->
+            <div id="successOverlay" class="success-overlay">
+                <i class="fa-regular fa-circle-check success-icon"></i>
+                <h2 style="font-family: 'Outfit'; font-size: 2rem;">Integração Ativada!</h2>
+                <p style="color: var(--text-secondary); margin-top: 0.5rem; text-align: center;">O Chatwoot foi ativado e configurado com sucesso para a sua instância.</p>
+                
+                <div class="webhook-card">
+                    <h3 style="font-size: 1rem; font-weight: 600; color: #fff; margin-bottom: 8px;">
+                        <i class="fa-solid fa-link" style="color: var(--secondary-accent); margin-right: 4px;"></i> URL do Webhook
+                    </h3>
+                    <p style="font-size: 0.8rem; color: var(--text-secondary);">Cadastre este webhook nas configurações da sua Caixa de Entrada no painel do Chatwoot:</p>
+                    <div class="webhook-url-display">
+                        <span id="webhookUrlText" style="word-break: break-all;">http://localhost:8080/chatwoot/webhook/instancia</span>
+                        <button onclick="copyWebhookToClipboard()"><i class="fa-regular fa-copy"></i> Copiar</button>
+                    </div>
+                    
+                    <ul class="instructions-list">
+                        <li>1. Vá no painel do seu **Chatwoot** -> **Configurações** -> **Caixas de Entrada** (Inboxes).</li>
+                        <li>2. Selecione a caixa de entrada API que foi criada automaticamente (ex: **WhatsApp - [Instância]**).</li>
+                        <li>3. Vá na aba **Webhooks** e clique em **Adicionar Novo Webhook**.</li>
+                        <li>4. Cole a URL copiada acima e ative o evento de **Mensagem Criada** (`message_created`).</li>
+                        <li>5. Salve. Pronto! Suas conversas agora estão totalmente sincronizadas de forma bidirecional.</li>
+                    </ul>
+                </div>
+                
+                <button class="btn btn-secondary" onclick="closeSuccessOverlay()" style="max-width: 200px;">
+                    <i class="fa-solid fa-arrow-left"></i> Voltar ao Painel
+                </button>
+            </div>
+
+            <!-- Header -->
+            <header>
+                <h1><i class="fa-solid fa-comments-dollar"></i> Chatwoot Settings</h1>
+                <p class="subtitle">Gerencie as configurações da integração com o Chatwoot de forma simples e intuitiva</p>
+            </header>
+
+            <!-- Main Config Form -->
+            <form id="configForm" onsubmit="saveConfiguration(event)">
+                <div class="grid">
+                    
+                    <!-- Evolution API Settings -->
+                    <div>
+                        <h2 class="section-title"><i class="fa-solid fa-server"></i> Evolution API</h2>
+                        
+                        <div class="form-group">
+                            <label for="apiUrl">Evolution Server URL</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-globe"></i>
+                                <input type="text" id="apiUrl" placeholder="Ex: http://localhost:8080" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="apiKey">Global API Key (ApiKey)</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-key"></i>
+                                <input type="password" id="apiKey" placeholder="Sua chave API global" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="instanceSelect">Selecione a Instância</label>
+                            <div class="input-wrapper select-wrapper" id="selectWrapper">
+                                <i class="fa-brands fa-whatsapp"></i>
+                                <select id="instanceSelect" onchange="loadInstanceConfig()" required>
+                                    <option value="" disabled selected>Insira a chave API para listar...</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chatwoot Settings -->
+                    <div>
+                        <h2 class="section-title"><i class="fa-solid fa-comments"></i> Chatwoot Connection</h2>
+
+                        <div class="form-group">
+                            <label for="cwUrl">Chatwoot Server URL</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-link"></i>
+                                <input type="text" id="cwUrl" placeholder="Ex: https://chatwoot.seudominio.com" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cwAccountId">Account ID</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-user-gear"></i>
+                                <input type="text" id="cwAccountId" placeholder="Ex: 1" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cwToken">Access Token (User Profile)</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-user-lock"></i>
+                                <input type="password" id="cwToken" placeholder="Seu token pessoal de acesso" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Integration Features Toggles -->
+                <h2 class="section-title" style="margin-top: 2rem;"><i class="fa-solid fa-toggle-on"></i> Funcionalidades e Preferências</h2>
+                <div class="toggle-group">
+                    <div class="grid" style="gap: 1rem 2rem;">
+                        
+                        <div class="toggle-item">
+                            <div class="toggle-info">
+                                <span class="toggle-title">Criar Caixa de Entrada Automaticamente</span>
+                                <span class="toggle-desc">Cria uma Inbox API no Chatwoot ao ativar</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="cwAutoCreate" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="toggle-item">
+                            <div class="toggle-info">
+                                <span class="toggle-title">Assinar Mensagens dos Agentes</span>
+                                <span class="toggle-desc">Adiciona o nome do atendente no início do envio</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="cwSignMsg" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="toggle-item">
+                            <div class="toggle-info">
+                                <span class="toggle-title">Reabrir Chats Resolvidos</span>
+                                <span class="toggle-desc">Reabre o chat se o cliente enviar nova mensagem</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="cwReopenChat" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="toggle-item">
+                            <div class="toggle-info">
+                                <span class="toggle-title">Importar Histórico da Instância</span>
+                                <span class="toggle-desc">Envia histórico de chats atuais (Experimental)</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="cwImportHistory">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Action Buttons -->
+                <div class="actions-bar">
+                    <button type="button" class="btn btn-secondary" onclick="fetchInstances()">
+                        <i class="fa-solid fa-rotate"></i> Carregar Instâncias
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="btnSubmit">
+                        <i class="fa-regular fa-paper-plane"></i> Salvar e Ativar Integração
+                    </button>
+                    <button type="button" class="btn btn-danger" onclick="deleteConfiguration()" id="btnDelete" style="display: none;">
+                        <i class="fa-regular fa-trash-can"></i> Desativar
+                    </button>
+                </div>
+            </form>
+
+            <!-- Real-time Status Terminal Output -->
+            <div class="terminal-panel">
+                <header>
+                    <span class="terminal-title"><i class="fa-solid fa-terminal"></i> Terminal de Feedback</span>
+                    <div class="terminal-dots">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                    </div>
+                </header>
+                <div class="terminal-output" id="terminalOutput">
+                    <div class="log-entry log-info">[Evolution] Painel de Integração inicializado com sucesso.</div>
+                    <div class="log-entry log-info">[Aviso] Digite sua apikey e clique em "Carregar Instâncias" para listar suas instâncias ativas do WhatsApp.</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Interface Script Logic -->
+    <script>
+        // Set auto detect for URL
+        document.getElementById('apiUrl').value = window.location.origin;
+
+        // Auto load values from localStorage if exist
+        if (localStorage.getItem('evo_apiKey')) {
+            document.getElementById('apiKey').value = localStorage.getItem('evo_apiKey');
+        }
+        if (localStorage.getItem('evo_cwUrl')) {
+            document.getElementById('cwUrl').value = localStorage.getItem('evo_cwUrl');
+        }
+        if (localStorage.getItem('evo_cwAccountId')) {
+            document.getElementById('cwAccountId').value = localStorage.getItem('evo_cwAccountId');
+        }
+        if (localStorage.getItem('evo_cwToken')) {
+            document.getElementById('cwToken').value = localStorage.getItem('evo_cwToken');
+        }
+
+        // Print log on terminal
+        function log(text, type = 'success') {
+            const output = document.getElementById('terminalOutput');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            const time = new Date().toLocaleTimeString();
+            entry.innerText = `[${time}] ${text}`;
+            output.appendChild(entry);
+            output.scrollTop = output.scrollHeight;
+        }
+
+        // Fetch active instances using key
+        async function fetchInstances() {
+            const apiUrl = document.getElementById('apiUrl').value.trim();
+            const apiKey = document.getElementById('apiKey').value.trim();
+
+            if (!apiUrl || !apiKey) {
+                log('Erro: É necessário preencher o Server URL e a Global API Key para buscar instâncias!', 'error');
+                return;
+            }
+
+            // Save key in localStorage
+            localStorage.setItem('evo_apiKey', apiKey);
+
+            log('Buscando instâncias ativas no servidor...', 'info');
+            const select = document.getElementById('instanceSelect');
+            select.innerHTML = '<option value="" disabled selected>Buscando instâncias...</option>';
+
+            try {
+                const response = await fetch(`${apiUrl}/instance/all`, {
+                    method: 'GET',
+                    headers: {
+                        'apikey': apiKey,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Servidor retornou status ${response.status}`);
+                }
+
+                const instances = await response.json();
+                
+                if (!Array.isArray(instances) || instances.length === 0) {
+                    select.innerHTML = '<option value="" disabled selected>Nenhuma instância criada no servidor</option>';
+                    log('Aviso: Nenhuma instância ativa foi encontrada no servidor.', 'error');
+                    return;
+                }
+
+                select.innerHTML = '<option value="" disabled selected>Selecione uma instância...</option>';
+                instances.forEach(inst => {
+                    const opt = document.createElement('option');
+                    opt.value = inst.name || inst.id;
+                    opt.innerText = `${inst.name || inst.id} (${inst.connected ? 'Conectada' : 'Desconectada'})`;
+                    select.appendChild(opt);
+                });
+
+                log(`Sucesso: ${instances.length} instâncias carregadas no seletor.`, 'success');
+
+            } catch (err) {
+                select.innerHTML = '<option value="" disabled selected>Erro ao carregar instâncias</option>';
+                log(`Falha ao obter instâncias: ${err.message}. Verifique a URL do servidor e a ApiKey!`, 'error');
+            }
+        }
+
+        // Fetch current instance config
+        async function loadInstanceConfig() {
+            const apiUrl = document.getElementById('apiUrl').value.trim();
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const instanceId = document.getElementById('instanceSelect').value;
+
+            if (!instanceId) return;
+
+            log(`Consultando configurações do Chatwoot para a instância "${instanceId}"...`, 'info');
+
+            try {
+                const response = await fetch(`${apiUrl}/chatwoot/find/${instanceId}`, {
+                    method: 'GET',
+                    headers: {
+                        'apikey': apiKey,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                // If not found or API error (404 page not found is handled here)
+                if (response.status === 404) {
+                    log(`Erro: Rota de busca não encontrada (404). Tem certeza que subiu a imagem customizada com suporte ao Chatwoot?`, 'error');
+                    return;
+                }
+
+                if (!response.ok) {
+                    throw new Error(`Status ${response.status}`);
+                }
+
+                const config = await response.json();
+
+                // If configuration is active, prefill the fields
+                if (config.accountId || config.url) {
+                    document.getElementById('cwUrl').value = config.url || '';
+                    document.getElementById('cwAccountId').value = config.accountId || '';
+                    document.getElementById('cwToken').value = config.token || '';
+                    document.getElementById('cwAutoCreate').checked = config.autoCreate;
+                    document.getElementById('cwSignMsg').checked = config.signMsg;
+                    document.getElementById('cwReopenChat').checked = config.reopenChat;
+                    document.getElementById('cwImportHistory').checked = config.importHistory;
+
+                    document.getElementById('btnDelete').style.display = 'block';
+                    log(`Instância "${instanceId}" já possui integração cadastrada! ID da Inbox: ${config.inboxId || 'N/A'}.`, 'success');
+                } else {
+                    document.getElementById('btnDelete').style.display = 'none';
+                    log(`Instância "${instanceId}" está livre para nova configuração.`, 'info');
+                }
+
+            } catch (err) {
+                log(`Aviso ao ler configurações da instância: ${err.message}.`, 'info');
+            }
+        }
+
+        // POST /chatwoot/set to save config
+        async function saveConfiguration(event) {
+            event.preventDefault();
+
+            const apiUrl = document.getElementById('apiUrl').value.trim();
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const instanceId = document.getElementById('instanceSelect').value;
+
+            const cwUrl = document.getElementById('cwUrl').value.trim();
+            const cwAccountId = document.getElementById('cwAccountId').value.trim();
+            const cwToken = document.getElementById('cwToken').value.trim();
+
+            const autoCreate = document.getElementById('cwAutoCreate').checked;
+            const signMsg = document.getElementById('cwSignMsg').checked;
+            const reopenChat = document.getElementById('cwReopenChat').checked;
+            const importHistory = document.getElementById('cwImportHistory').checked;
+
+            if (!instanceId) {
+                log('Erro: Selecione uma instância antes de salvar!', 'error');
+                return;
+            }
+
+            // Save form values in localStorage to facilitate next uses
+            localStorage.setItem('evo_cwUrl', cwUrl);
+            localStorage.setItem('evo_cwAccountId', cwAccountId);
+            localStorage.setItem('evo_cwToken', cwToken);
+
+            const submitBtn = document.getElementById('btnSubmit');
+            const originalBtnHtml = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch spinner"></i> Enviando e Configurando...';
+
+            log(`Iniciando ativação do Chatwoot para a instância "${instanceId}"...`, 'info');
+
+            const payload = {
+                enabled: true,
+                url: cwUrl,
+                accountId: cwAccountId,
+                token: cwToken,
+                signMsg: signMsg,
+                reopenChat: reopenChat,
+                autoCreate: autoCreate,
+                importHistory: importHistory
+            };
+
+            try {
+                const response = await fetch(`${apiUrl}/chatwoot/set/${instanceId}`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': apiKey,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Status ${response.status}: ${errorText}`);
+                }
+
+                const result = await response.json();
+                
+                log(`Integração configurada com sucesso para a instância "${instanceId}"!`, 'success');
+                
+                // Show Success Overlay Panel
+                const webhookUrl = `${apiUrl}/chatwoot/webhook/${instanceId}`;
+                document.getElementById('webhookUrlText').innerText = webhookUrl;
+                document.getElementById('successOverlay').classList.add('active');
+
+                // Enable delete button since config exists now
+                document.getElementById('btnDelete').style.display = 'block';
+
+            } catch (err) {
+                log(`Erro ao ativar integração: ${err.message}`, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnHtml;
+            }
+        }
+
+        // Delete Configuration
+        async function deleteConfiguration() {
+            const apiUrl = document.getElementById('apiUrl').value.trim();
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const instanceId = document.getElementById('instanceSelect').value;
+
+            if (!instanceId) return;
+
+            if (!confirm(`Tem certeza que deseja desativar e apagar a integração da instância "${instanceId}"?`)) {
+                return;
+            }
+
+            log(`Desativando e limpando dados da integração para "${instanceId}"...`, 'info');
+
+            try {
+                const response = await fetch(`${apiUrl}/chatwoot/delete/${instanceId}`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': apiKey,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Status ${response.status}`);
+                }
+
+                log(`Integração desativada com sucesso para a instância "${instanceId}".`, 'success');
+                
+                // Clear fields & hide delete btn
+                document.getElementById('btnDelete').style.display = 'none';
+
+            } catch (err) {
+                log(`Erro ao desativar: ${err.message}`, 'error');
+            }
+        }
+
+        // Copy webhook URL to clipboard helper
+        function copyWebhookToClipboard() {
+            const urlText = document.getElementById('webhookUrlText').innerText;
+            navigator.clipboard.writeText(urlText).then(() => {
+                log('URL do webhook copiada para a área de transferência!', 'success');
+                alert('Webhook copiado com sucesso! Agora adicione-o nas configurações de Inbox do seu Chatwoot.');
+            }).catch(err => {
+                log('Falha ao copiar URL automaticamente.', 'error');
+            });
+        }
+
+        // Close Success Panel
+        function closeSuccessOverlay() {
+            document.getElementById('successOverlay').classList.remove('active');
+        }
+
+    </script>
+</body>
+</html>

@@ -77,6 +77,10 @@ func (r *Routes) AssignRoutes(eng *gin.Engine) {
 		c.File("manager/dist/index.html")
 	})
 
+	eng.GET("/chatwoot-dashboard", func(c *gin.Context) {
+		c.File("public/chatwoot.html")
+	})
+
 	eng.GET("/server/ok", r.serverHandler.ServerOk)
 
 	routes := eng.Group("/instance")
