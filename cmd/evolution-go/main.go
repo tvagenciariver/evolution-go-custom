@@ -62,6 +62,8 @@ import (
 	user_handler "github.com/EvolutionAPI/evolution-go/pkg/user/handler"
 	user_service "github.com/EvolutionAPI/evolution-go/pkg/user/service"
 	whatsmeow_service "github.com/EvolutionAPI/evolution-go/pkg/whatsmeow/service"
+	chatwoot_handler "github.com/EvolutionAPI/evolution-go/pkg/chatwoot/handler"
+	chatwoot_service "github.com/EvolutionAPI/evolution-go/pkg/chatwoot/service"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
@@ -196,6 +198,11 @@ func setupRouter(db *gorm.DB, authDB *sql.DB, sqliteDB *sql.DB, config *config.C
 	labelService := label_service.NewLabelService(clientPointer, whatsmeowService, labelRepository, loggerWrapper)
 	newsletterService := newsletter_service.NewNewsletterService(clientPointer, whatsmeowService, loggerWrapper)
 
+	// NOVO: Inicialização do Chatwoot
+	cwService := chatwoot_service.NewChatwootService(instanceRepository, loggerWrapper)
+	whatsmeow_service.SetChatwootService(cwService)
+	cwHandler := chatwoot_handler.NewChatwootHandler(cwService, instanceRepository, sendMessageService, loggerWrapper)
+
 	// NOVO: PollHandler usando PollService já inicializado no whatsmeowService (evita dupla inicialização)
 	pollHandler := poll_handler.NewPollHandler(whatsmeowService.GetPollService(), loggerWrapper)
 
@@ -234,6 +241,7 @@ func setupRouter(db *gorm.DB, authDB *sql.DB, sqliteDB *sql.DB, config *config.C
 		newsletter_handler.NewNewsletterHandler(newsletterService),
 		pollHandler,
 		server_handler.NewServerHandler(),
+		cwHandler,
 	).AssignRoutes(r)
 
 	if config.ConnectOnStartup {

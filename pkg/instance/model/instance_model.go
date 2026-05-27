@@ -33,6 +33,17 @@ type Instance struct {
 	ReadMessages  bool   `json:"readMessages" gorm:"default:false"`
 	IgnoreGroups  bool   `json:"ignoreGroups" gorm:"default:false"`
 	IgnoreStatus  bool   `json:"ignoreStatus" gorm:"default:false"`
+
+	// Chatwoot Integration Settings
+	ChatwootEnabled       bool   `json:"chatwootEnabled" gorm:"default:false"`
+	ChatwootAccountId     string `json:"chatwootAccountId" gorm:"default:''"`
+	ChatwootToken         string `json:"chatwootToken" gorm:"default:''"`
+	ChatwootUrl           string `json:"chatwootUrl" gorm:"default:''"`
+	ChatwootSignMsg       bool   `json:"chatwootSignMsg" gorm:"default:false"`
+	ChatwootReopenChat    bool   `json:"chatwootReopenChat" gorm:"default:false"`
+	ChatwootAutoCreate    bool   `json:"chatwootAutoCreate" gorm:"default:false"`
+	ChatwootImportHistory  bool   `json:"chatwootImportHistory" gorm:"default:false"`
+	ChatwootInboxId       int    `json:"chatwootInboxId" gorm:"default:0"`
 }
 
 // AdvancedSettings representa as configurações avançadas de uma instância

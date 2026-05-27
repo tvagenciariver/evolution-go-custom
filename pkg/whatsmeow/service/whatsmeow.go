@@ -49,6 +49,16 @@ import (
 	"github.com/EvolutionAPI/evolution-go/pkg/utils"
 )
 
+type ChatwootServiceInterface interface {
+	SendWhatsAppToChatwoot(instance *instance_model.Instance, evt *events.Message) error
+}
+
+var ChatwootServiceInstance ChatwootServiceInterface
+
+func SetChatwootService(s ChatwootServiceInterface) {
+	ChatwootServiceInstance = s
+}
+
 type WhatsmeowService interface {
 	StartClient(clientData *ClientData)
 	ConnectOnStartup(clientName string)
@@ -1135,6 +1145,15 @@ func (mycli *MyClient) myEventHandler(rawEvt interface{}) {
 		if parsedMessageType == "ignore" || strings.HasPrefix(parsedMessageType, "unknown_protocol_") {
 			mycli.loggerWrapper.GetLogger(mycli.userID).LogInfo("[%s] Message ignored because it's a unknown protocol message", mycli.userID)
 			return
+		}
+
+		// Trigger Chatwoot forwarding if integration is enabled
+		if mycli.Instance.ChatwootEnabled && ChatwootServiceInstance != nil {
+			go func(inst *instance_model.Instance, e *events.Message) {
+				if err := ChatwootServiceInstance.SendWhatsAppToChatwoot(inst, e); err != nil {
+					mycli.loggerWrapper.GetLogger(mycli.userID).LogError("[%s] Failed to send WhatsApp message to Chatwoot: %v", mycli.userID, err)
+				}
+			}(mycli.Instance, evt)
 		}
 
 		if postMap["data"] != nil {
