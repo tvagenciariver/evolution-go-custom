@@ -72,6 +72,10 @@ func (s *chatwootService) request(method, cwUrl, token, path string, body interf
 		return nil, resp.StatusCode, err
 	}
 
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		return respBytes, resp.StatusCode, fmt.Errorf("HTTP status %d: %s", resp.StatusCode, string(respBytes))
+	}
+
 	return respBytes, resp.StatusCode, nil
 }
 
