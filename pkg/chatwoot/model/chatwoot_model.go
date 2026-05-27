@@ -35,9 +35,10 @@ type ChatwootInbox struct {
 
 // ChatwootContact represents a Contact object in Chatwoot API
 type ChatwootContact struct {
-	Id          int    `json:"id"`
-	Name        string `json:"name"`
-	PhoneNumber string `json:"phone_number"`
+	Id               int               `json:"id"`
+	Name             string            `json:"name"`
+	PhoneNumber      string            `json:"phone_number"`
+	CustomAttributes map[string]string `json:"custom_attributes"`
 }
 
 // ChatwootConversation represents a Conversation object in Chatwoot API

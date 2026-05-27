@@ -22,6 +22,7 @@ type ChatwootService interface {
 	FindOrCreateInbox(instance *instance_model.Instance) (int, error)
 	SendWhatsAppToChatwoot(instance *instance_model.Instance, evt *events.Message) error
 	SendWhatsAppMessageToChatwoot(instance *instance_model.Instance, chatJID string, pushName string, messageId string, text string, isFromMe bool) error
+	GetContact(instance *instance_model.Instance, contactId int) (*chatwoot_model.ChatwootContact, error)
 }
 
 type chatwootService struct {
@@ -368,4 +369,38 @@ func (s *chatwootService) extractMessageText(msg *waE2E.Message) string {
 	}
 
 	return ""
+}
+
+// GetContact retrieves full contact details from Chatwoot API
+func (s *chatwootService) GetContact(instance *instance_model.Instance, contactId int) (*chatwoot_model.ChatwootContact, error) {
+	path := fmt.Sprintf("/api/v1/accounts/%s/contacts/%d", instance.ChatwootAccountId, contactId)
+	resp, code, err := s.request("GET", instance.ChatwootUrl, instance.ChatwootToken, path, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch contact %d: %v (code: %d)", contactId, err, code)
+	}
+
+	var result struct {
+		Payload *struct {
+			chatwoot_model.ChatwootContact
+			Contact *chatwoot_model.ChatwootContact `json:"contact"`
+		} `json:"payload"`
+		chatwoot_model.ChatwootContact
+	}
+
+	if err := json.Unmarshal(resp, &result); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal contact: %v (response: %s)", err, string(resp))
+	}
+
+	if result.Payload != nil {
+		if result.Payload.Contact != nil {
+			return result.Payload.Contact, nil
+		}
+		return &result.Payload.ChatwootContact, nil
+	}
+
+	if result.Id > 0 {
+		return &result.ChatwootContact, nil
+	}
+
+	return nil, fmt.Errorf("contact data not found in response: %s", string(resp))
 }

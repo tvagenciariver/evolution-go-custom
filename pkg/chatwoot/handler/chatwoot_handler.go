@@ -197,6 +197,32 @@ func (h *chatwootHandler) HandleWebhook(c *gin.Context) {
 		rawPhone = payload.Conversation.Contact.PhoneNumber
 	}
 
+	// Fallback: If both are empty, query Chatwoot API directly using Contact ID
+	if rawPhone == "" {
+		contactId := payload.Contact.Id
+		if contactId == 0 {
+			contactId = payload.Conversation.Contact.Id
+		}
+
+		if contactId > 0 {
+			h.loggerWrapper.GetLogger(instanceId).LogInfo("[%s] Webhook payload has empty phone. Fetching contact details dynamically for ID %d...", instanceId, contactId)
+			contact, err := h.cwService.GetContact(instance, contactId)
+			if err == nil && contact != nil {
+				// Try direct phone number field first
+				rawPhone = contact.PhoneNumber
+				
+				// Try custom_attributes["jid"] next (which stores the WhatsApp JID)
+				if rawPhone == "" && contact.CustomAttributes != nil {
+					rawPhone = contact.CustomAttributes["jid"]
+				}
+				
+				h.loggerWrapper.GetLogger(instanceId).LogInfo("[%s] Successfully retrieved contact phone from API: '%s'", instanceId, rawPhone)
+			} else {
+				h.loggerWrapper.GetLogger(instanceId).LogError("[%s] Failed to fetch contact %d details from Chatwoot API: %v", instanceId, contactId, err)
+			}
+		}
+	}
+
 	if rawPhone == "" {
 		h.loggerWrapper.GetLogger(instanceId).LogError("[%s] Webhook error: Contact phone number is empty. Root phone_number='%s', Nested phone_number='%s'", instanceId, payload.Contact.PhoneNumber, payload.Conversation.Contact.PhoneNumber)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "contact phone number is empty"})
