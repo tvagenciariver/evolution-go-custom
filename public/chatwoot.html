@@ -821,7 +821,7 @@
                 select.innerHTML = '<option value="" disabled selected>Selecione uma instância...</option>';
                 instances.forEach(inst => {
                     const opt = document.createElement('option');
-                    opt.value = inst.name || inst.id;
+                    opt.value = inst.id;
                     opt.innerText = `${inst.name || inst.id} (${inst.connected ? 'Conectada' : 'Desconectada'})`;
                     select.appendChild(opt);
                 });
