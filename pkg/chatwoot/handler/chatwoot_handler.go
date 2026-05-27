@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	chatwoot_model "github.com/EvolutionAPI/evolution-go/pkg/chatwoot/model"
@@ -197,7 +198,7 @@ func (h *chatwootHandler) HandleWebhook(c *gin.Context) {
 		rawPhone = payload.Conversation.Contact.PhoneNumber
 	}
 
-	// Fallback: If both are empty, query Chatwoot API directly using Contact ID
+	// Fallback 1: If both are empty, query Chatwoot API directly using Contact ID
 	if rawPhone == "" {
 		contactId := payload.Contact.Id
 		if contactId == 0 {
@@ -216,9 +217,46 @@ func (h *chatwootHandler) HandleWebhook(c *gin.Context) {
 					rawPhone = contact.CustomAttributes["jid"]
 				}
 				
+				// Try to extract phone number from contact name returned by API
+				if rawPhone == "" && contact.Name != "" {
+					cleanName := contact.Name
+					cleanName = strings.ReplaceAll(cleanName, "@s.whatsapp.net", "")
+					cleanName = strings.ReplaceAll(cleanName, "@c.us", "")
+					
+					reg := regexp.MustCompile(`[^0-9]`)
+					digits := reg.ReplaceAllString(cleanName, "")
+					
+					if len(digits) >= 8 && len(digits) <= 15 {
+						rawPhone = digits
+						h.loggerWrapper.GetLogger(instanceId).LogInfo("[%s] Extracted phone from fetched contact name '%s': '%s'", instanceId, contact.Name, rawPhone)
+					}
+				}
+				
 				h.loggerWrapper.GetLogger(instanceId).LogInfo("[%s] Successfully retrieved contact phone from API: '%s'", instanceId, rawPhone)
 			} else {
 				h.loggerWrapper.GetLogger(instanceId).LogError("[%s] Failed to fetch contact %d details from Chatwoot API: %v", instanceId, contactId, err)
+			}
+		}
+	}
+
+	// Fallback 2: Try to extract from webhook payload's contact name
+	if rawPhone == "" {
+		name := payload.Contact.Name
+		if name == "" {
+			name = payload.Conversation.Contact.Name
+		}
+		
+		if name != "" {
+			cleanName := name
+			cleanName = strings.ReplaceAll(cleanName, "@s.whatsapp.net", "")
+			cleanName = strings.ReplaceAll(cleanName, "@c.us", "")
+			
+			reg := regexp.MustCompile(`[^0-9]`)
+			digits := reg.ReplaceAllString(cleanName, "")
+			
+			if len(digits) >= 8 && len(digits) <= 15 {
+				rawPhone = digits
+				h.loggerWrapper.GetLogger(instanceId).LogInfo("[%s] Extracted phone from payload contact name '%s': '%s'", instanceId, name, rawPhone)
 			}
 		}
 	}
