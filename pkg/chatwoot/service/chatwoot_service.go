@@ -357,7 +357,7 @@ func (s *chatwootService) extractMessageText(msg *waE2E.Message) string {
 		return fmt.Sprintf("[🔘 Resposta de Botão: %s]", *msg.ButtonsResponseMessage.SelectedButtonID)
 	}
 	if msg.TemplateButtonReplyMessage != nil {
-		return fmt.Sprintf("[🔘 Resposta de Botão: %s]", *msg.TemplateButtonReplyMessage.SelectedId)
+		return fmt.Sprintf("[🔘 Resposta de Botão: %s]", *msg.TemplateButtonReplyMessage.SelectedID)
 	}
 	if msg.ListResponseMessage != nil {
 		return fmt.Sprintf("[📝 Item Selecionado da Lista: %s]", *msg.ListResponseMessage.Title)
