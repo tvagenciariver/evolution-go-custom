@@ -61,6 +61,11 @@ type ChatwootWebhookPayload struct {
 	MessageType  string `json:"message_type"`
 	Private      bool   `json:"private"`
 	Content      string `json:"content"`
+	Contact      struct {
+		Id          int    `json:"id"`
+		Name        string `json:"name"`
+		PhoneNumber string `json:"phone_number"`
+	} `json:"contact"`
 	Conversation struct {
 		Id      int `json:"id"`
 		InboxId int `json:"inbox_id"`

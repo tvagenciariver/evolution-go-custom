@@ -192,8 +192,13 @@ func (h *chatwootHandler) HandleWebhook(c *gin.Context) {
 	}
 
 	// Clean contact phone number
-	rawPhone := payload.Conversation.Contact.PhoneNumber
+	rawPhone := payload.Contact.PhoneNumber
 	if rawPhone == "" {
+		rawPhone = payload.Conversation.Contact.PhoneNumber
+	}
+
+	if rawPhone == "" {
+		h.loggerWrapper.GetLogger(instanceId).LogError("[%s] Webhook error: Contact phone number is empty. Root phone_number='%s', Nested phone_number='%s'", instanceId, payload.Contact.PhoneNumber, payload.Conversation.Contact.PhoneNumber)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "contact phone number is empty"})
 		return
 	}
