@@ -252,7 +252,7 @@ func (r *Routes) AssignRoutes(eng *gin.Engine) {
 	// NOVO: Rotas do Chatwoot
 	routes = eng.Group("/chatwoot")
 	{
-		routes.Use(r.authMiddleware.Auth)
+		routes.Use(r.authMiddleware.AuthAdmin)
 		{
 			routes.POST("/set/:instanceId", r.chatwootHandler.SetConfiguration)
 			routes.GET("/find/:instanceId", r.chatwootHandler.GetConfiguration)
