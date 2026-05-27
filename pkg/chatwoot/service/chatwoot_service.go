@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/EvolutionAPI/evolution-go/pkg/chatwoot/model"
+	chatwoot_model "github.com/EvolutionAPI/evolution-go/pkg/chatwoot/model"
 	instance_model "github.com/EvolutionAPI/evolution-go/pkg/instance/model"
 	instance_repository "github.com/EvolutionAPI/evolution-go/pkg/instance/repository"
 	logger_wrapper "github.com/EvolutionAPI/evolution-go/pkg/logger"

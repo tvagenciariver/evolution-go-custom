@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/EvolutionAPI/evolution-go/pkg/chatwoot/model"
-	"github.com/EvolutionAPI/evolution-go/pkg/chatwoot/service"
+	chatwoot_model "github.com/EvolutionAPI/evolution-go/pkg/chatwoot/model"
+	chatwoot_service "github.com/EvolutionAPI/evolution-go/pkg/chatwoot/service"
 	instance_repository "github.com/EvolutionAPI/evolution-go/pkg/instance/repository"
 	logger_wrapper "github.com/EvolutionAPI/evolution-go/pkg/logger"
 	send_service "github.com/EvolutionAPI/evolution-go/pkg/sendMessage/service"
